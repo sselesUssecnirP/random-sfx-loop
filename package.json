@@ -1,0 +1,15 @@
+{
+  "name": "random-sfx-loop",
+  "version": "1.0.0",
+  "description": "plays random sfx at random intervals",
+  "main": "start.js",
+  "scripts": {
+    "test": "electron ."
+  },
+  "author": "sselesUssecnirP",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^23.2.1",
+    "electron-packager": "^17.1.1"
+  }
+}

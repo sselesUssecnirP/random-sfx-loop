@@ -1,0 +1,67 @@
+@keyframes rainbow{
+    100%,0%{
+        color: rgb(255,0,0);
+    }
+    8%{
+        color: rgb(255,127,0);
+    }
+    16%{
+        color: rgb(255,255,0);
+    }
+    25%{
+        color: rgb(127,255,0);
+    }
+    33%{
+        color: rgb(0,255,0);
+    }
+    41%{
+        color: rgb(0,255,127);
+    }
+    50%{
+        color: rgb(0,255,255);
+    }
+    58%{
+        color: rgb(0,127,255);
+    }
+    66%{
+        color: rgb(0,0,255);
+    }
+    75%{
+        color: rgb(127,0,255);
+    }
+    83%{
+        color: rgb(255,0,255);
+    }
+    91%{
+        color: rgb(255,0,127);
+    }
+}
+
+
+html {
+    display: flex;
+    text-align: center;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    background-color: #202225;
+    color: #40444b;
+}
+
+#toggleSFX {
+    padding: 10px;
+    background-color: #2f3136;
+    border: none;
+    border-radius: 10px;
+    font-size: 40px;
+}
+
+#toggleSFX:hover {
+    padding: 10px;
+    background-color: #343842;
+    animation: rainbow 1.25s linear;
+    animation-iteration-count: infinite;
+    border: none;
+    border-radius: 10px;
+    font-size: 40px;
+}
