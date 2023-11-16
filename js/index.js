@@ -1,5 +1,6 @@
 // Calls upon Node.JS filesystem module to read directories synchronously
 const { readdirSync } = require('fs');
+const isTesting = true;
 // Creates an empty audio object array
 const audio = [];
 // Determines the default value of sfx toggle state
@@ -10,12 +11,16 @@ let runningMethods = 1;
 // Common test value: 1000
 let maxCooldown = 120000;
 
-
+if (isTesting) {
+    let dir = './sounds';
+} else {
+    let dir = './resources/sounds'
+}
 
 // Reads the /sounds directory asynchrounously (1 file backwards from current directory)
-readdirSync('./app/sounds').forEach(file => {
+readdirSync(dir).forEach(file => {
     // Each directory is it's own mp3 file, and gets added to a list
-    audio.push(new Audio(`../sounds/${file}`))
+    audio.push(new Audio(`${dir}${file}`))
 });
 
 // A function to be called from the button which modifies the sfx toggle state
@@ -39,7 +44,7 @@ const toggleSFX = () => {
 
 // Modifies the number of sfx processes that run
 const changeMethodCount = () => {
-    let obj = document.getElementById('changeSFXCount').value
+    let obj = Number.parseInt(document.getElementById('changeSFXCount').value)
     if (Number.isInteger(obj)) {
         runningMethods = obj;
     } else {

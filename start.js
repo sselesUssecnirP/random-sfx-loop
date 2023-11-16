@@ -18,12 +18,12 @@ function createWindow(file, opts) {
 }
 
 app.whenReady().then(() => {
-    createWindow("app/html/index.html", { height: yindex, width: xindex, webPreferences: webPrefs, resizable: true, maximizable: false });
+    createWindow("html/index.html", { height: yindex, width: xindex, webPreferences: webPrefs, resizable: true, maximizable: false });
 
     console.log('loaded!')
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
-            createWindow("app/html/index.html", { height: xindex, width: yindex, webPreferences: webPrefs, resizable: true, maximizable: false });
+            createWindow("html/index.html", { height: xindex, width: yindex, webPreferences: webPrefs, resizable: true, maximizable: false });
         }
       });
 });
