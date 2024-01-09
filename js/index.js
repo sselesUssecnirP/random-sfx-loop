@@ -54,6 +54,17 @@ const changeMethodCount = () => {
     }
 }
 
+// Modifies the number of sfx processes that run
+const changeMethodTime = () => {
+    let obj = Number.parseInt(document.getElementById('changeSFXCD').value)
+    if (Number.isInteger(obj)) {
+        maxCooldown = obj * 1000;
+    } else {
+        document.getElementById('changeSFXCD').value = '120';
+        console.log(`Invalid response for SFX cooldown value`)
+    }
+}
+
 // Runs random sfx per random decimal times maxCooldown
 const runSFX = async () => {
     if (!sfxEnabled) return;
