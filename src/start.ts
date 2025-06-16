@@ -3,10 +3,20 @@
     Creates the windows
 
 */
+
+const { updateElectronApp, UpdateSourceType } = require('update-electron-app')
+updateElectronApp({
+  updateSource: {
+    type: UpdateSourceType.ElectronPublicUpdateService,
+    repo: 'sselesUssecnirP/random-sfx-loop'
+  },
+  updateInterval: '1 hour'
+})
+
+
 // @ts-expect-error | this does not cause a conflict in the program when running
 const { app, BrowserWindow, screen, ipcMain } = require('electron');
 
-const isTesting = true;
 const html = "./dist/html/index.html"
 const browserPreferences = {
     initialWindow: { 
