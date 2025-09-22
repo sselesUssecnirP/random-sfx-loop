@@ -124,15 +124,13 @@ const runSFX = async () => {
 
     const onEnded = () => {
 
-        sfx.removeEventListener('ended', onEnded)
-
         try { sfx.pause() } catch {}
 
         sfx.removeAttribute('src')
         sfx.load()
     }
 
-    sfx.addEventListener('ended', onEnded);
+    sfx.onended = onEnded
 
     sfx.play()
 

@@ -85,7 +85,7 @@ const api: API = {
     setConfig: (config) => {
         writeFileSync(path.join(configPath, 'config.json'), JSON.stringify(config, null, 2), { encoding: 'utf-8' });
     }, 
-    reload: () => ipcRenderer.emit('reload', 'main')
+    reload: () => ipcRenderer.send('reload', 'main')
 
 
 }
