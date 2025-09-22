@@ -1,5 +1,4 @@
 node_modules
-dist/sounds/*
 out/
-dist
-forge.config.js
+dist/
+*.js

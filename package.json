@@ -1,11 +1,12 @@
 {
   "name": "random-sfx-loop",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "plays random sfx at random intervals",
   "icon": "icon.ico",
   "main": "./dist/start.js",
   "scripts": {
-    "test": "tsc --pretty & electron .",
+    "dev": "tsc --watch",
+    "test": "electron .",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make"
@@ -22,8 +23,8 @@
     "electron": "^23.2.1"
   },
   "dependencies": {
-    "ascii-table": "^0.0.9",
-    "electron-squirrel-startup": "^1.0.0",
+    "ascii-table3": "^1.0.1",
+    "electron-squirrel-startup": "^1.0.1",
     "update-electron-app": "^3.1.1"
   }
 }
