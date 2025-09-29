@@ -1,16 +1,9 @@
 
-import { contextBridge, ipcRenderer } from 'electron';
-import { readdirSync, writeFileSync, readFileSync, mkdirSync, existsSync, exists, Dirent } from 'fs';
+import { contextBridge, ipcRenderer } from 'electron/renderer';
+import { readdirSync, writeFileSync, readFileSync, mkdirSync, existsSync, Dirent } from 'node:fs';
 import { AsciiTable3, AlignmentEnum } from 'ascii-table3';
 import { performance } from 'node:perf_hooks';
-import path from 'path';
-
-export type API = {
-    init: () => initReturn,
-    dirExists: (dir: string) => boolean,
-    setConfig: (config: object) => void,
-    reload: () => void
-}
+import path from 'node:path';
 
 const configPath = path.join(process.env.LOCALAPPDATA as string, 'sselesUssecnirP', 'random-sfx');
 const sfxTable = new AsciiTable3().setHeading('file');
@@ -21,9 +14,10 @@ const api: API = {
 
         /*  CONFIG  */
 
-        const defaultConfig = {
+        const defaultConfig: config = {
             directory: "",
-            ignoredFolders: []
+            ignoredFolders: [],
+            ignoreUntagged: false
         };
 
         if (!existsSync(configPath)) {
@@ -31,7 +25,7 @@ const api: API = {
             writeFileSync(path.join(configPath, 'config.json'), JSON.stringify(defaultConfig, null, 2), { encoding: 'utf-8' });
         }
 
-        let config = JSON.parse(readFileSync(path.join(configPath, 'config.json'), { encoding: 'utf-8'}));
+        let config: config = JSON.parse(readFileSync(path.join(configPath, 'config.json'), { encoding: 'utf-8'}));
 
         if (config.directory == "") {
             let defaultPath = path.join(process.env.USERPROFILE as string, "Music", "random-sfx");
@@ -50,18 +44,40 @@ const api: API = {
 
         sfxTable.clearRows()
 
-        const audio: string[] = [];
+        const audio: Array<loadedAudio> = [];
 
         let searchAudio = (baseDir: string) => {
 
             console.log(baseDir)
 
+            const isAudioTag = (x: unknown): x is loadedAudio['tag'] =>
+                x === 'song' || x === 'sfx';
+
             readdirSync(baseDir, { withFileTypes: true}).forEach((dir: Dirent) => {
                 
                 if (dir.isFile()) {
                     if (['.mp3', '.ogg', '.wav'].some(e => dir.name.endsWith(e))) {
-                        audio.push(path.join(baseDir, dir.name));
-                        sfxTable.addRow(dir.name);
+                        
+                        let reg = /^\[(SONG|SFX)\]/i;
+                        let audioTag: loadedAudio['tag'];
+                        if (reg.test(dir.name)) {
+                            let x = dir.name.match(reg)?.[1].toLowerCase();
+                            if (isAudioTag(x)) {
+                                audioTag = x;
+                            } else {
+                                audioTag = undefined;
+                            }
+                        }
+
+                        let addAudio: loadedAudio = {
+                            loc: path.join(baseDir, dir.name) as FilePath,
+                            tag: audioTag
+                        }
+
+                        if ((config.ignoreUntagged && addAudio.tag != undefined) || (config.ignoreUntagged === false)) {
+                            audio.push(addAudio);
+                            sfxTable.addRow(dir.name);
+                        }
                     }
                 } else if (dir.isDirectory() && !config.ignoredFolders.some((e: string) => path.join(baseDir, dir.name).includes(e))) {
                     searchAudio(path.join(baseDir, dir.name))
@@ -81,11 +97,12 @@ const api: API = {
         return { audio: audio, config: config };
 
     }, // End of init()
-    dirExists: (dir) => existsSync(dir),
+    dirExists: (dir) => existsSync(dir), // End of dirExists()
     setConfig: (config) => {
         writeFileSync(path.join(configPath, 'config.json'), JSON.stringify(config, null, 2), { encoding: 'utf-8' });
-    }, 
-    reload: () => ipcRenderer.send('reload', 'main')
+    }, // End of setConfig()
+    reload: (e: string) => ipcRenderer.send('reload', e),
+    isDev: async () => { return await ipcRenderer.invoke('isDev') }
 
 
 }

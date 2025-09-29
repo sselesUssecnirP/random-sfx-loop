@@ -8,6 +8,7 @@
     "dev": "tsc --watch",
     "test": "electron .",
     "start": "electron-forge start",
+    "build": "npm run package && npm run make",
     "package": "electron-forge package",
     "make": "electron-forge make"
   },
