@@ -3,7 +3,9 @@ import { contextBridge, ipcRenderer } from 'electron/renderer';
 import { readdirSync, writeFileSync, readFileSync, mkdirSync, existsSync, Dirent } from 'node:fs';
 import { AsciiTable3, AlignmentEnum } from 'ascii-table3';
 import { performance } from 'node:perf_hooks';
+import { pathToFileURL } from 'node:url';
 import path from 'node:path';
+
 
 const configPath = path.join(process.env.LOCALAPPDATA as string, 'sselesUssecnirP', 'random-sfx');
 const sfxTable = new AsciiTable3().setHeading('file');
@@ -17,7 +19,8 @@ const api: API = {
         const defaultConfig: config = {
             directory: "",
             ignoredFolders: [],
-            ignoreUntagged: false
+            ignoreUntagged: false,
+            volume: 75
         };
 
         if (!existsSync(configPath)) {
@@ -53,8 +56,8 @@ const api: API = {
             const isAudioTag = (x: unknown): x is loadedAudio['tag'] =>
                 x === 'song' || x === 'sfx';
 
-            readdirSync(baseDir, { withFileTypes: true}).forEach((dir: Dirent) => {
-                
+            readdirSync(baseDir, { withFileTypes: true}).forEach(async (dir: Dirent) => {
+
                 if (dir.isFile()) {
                     if (['.mp3', '.ogg', '.wav'].some(e => dir.name.endsWith(e))) {
                         
@@ -71,7 +74,9 @@ const api: API = {
 
                         let addAudio: loadedAudio = {
                             loc: path.join(baseDir, dir.name) as FilePath,
-                            tag: audioTag
+                            tag: audioTag,
+                            duration: 0,
+                            src: pathToFileURL(path.join(baseDir, dir.name)).href
                         }
 
                         if ((config.ignoreUntagged && addAudio.tag != undefined) || (config.ignoreUntagged === false)) {
