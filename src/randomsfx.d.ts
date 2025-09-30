@@ -24,7 +24,10 @@ declare global {
         ignoreUntagged: true | false,
         volume?: number,
         capQueue?: boolean,
-        queueCap?: number
+        queueCap?: number,
+        useBinomial?: boolean,
+        binomialTrials?: number,
+        binomialProb?: number
     }
 
     type loadedAudio = {

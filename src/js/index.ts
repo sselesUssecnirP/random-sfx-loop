@@ -7,6 +7,9 @@ enum changeConfigOpts {
     Volume = 'volume',
     CapQueue = 'capQueue',
     QueueCap = 'queueCap',
+    ShouldBinomial = 'shouldBinomial',
+    BinomialTrials = 'binomialTrials',
+    BinomialProb = 'binomialProb',
     Reload = 'reload'
 }
 
@@ -34,16 +37,17 @@ const connectElementToMaster = (element: HTMLAudioElement) => {
     return node;
 }
 
-let random
-let maxQueue = 50;
-let capQueue = false;
+let useBinomial = config.useBinomial ?? false;
+let binomialParams = [config.binomialTrials ?? 1, config.binomialProb ?? 0.5];
+let maxQueue = config.queueCap ?? 50;
+let capQueue = config.capQueue ?? false;
 let stopSpawn = false;
 let sfxEnabled = false;
 let runningMethods = 1;
 let isTesting = window.api.isDev();
 let maxRandomInterval = isTesting ? 1 : 120;
 let minQueueSong = 60;
-let shouldIgnoreUntagged = config.ignoreUntagged;
+let shouldIgnoreUntagged = config.ignoreUntagged ?? false;
 
 //let nowPlaying = document.getElementById('nowPlaying') as HTMLParagraphElement;
 
@@ -76,7 +80,17 @@ let capQueueLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelEleme
 let queueCapEl = document.getElementById('queueCap') as HTMLInputElement;
 let queueCapLab = document.getElementById('queueCapLab') as HTMLLabelElement;
 
+let shouldBinomial = document.getElementById('shouldBinomial') as HTMLInputElement;
+let shouldBinomialLab = document.getElementById('shouldBinomialLab') as HTMLLabelElement;
+let binomialTrials = document.getElementById('binomialTrials') as HTMLInputElement;
+let binomialTrialsLab = document.getElementById('binomialTrialsLab') as HTMLLabelElement;
+let binomialProb = document.getElementById('binomialProb') as HTMLInputElement;
+let binomialProbLab = document.getElementById('binomialProbLab') as HTMLLabelElement;
+
 settings.style.display = 'none';
+shouldBinomial.checked = config.useBinomial ?? false;
+binomialTrials.value = `${binomialParams[0]}`;
+binomialProb.value = `${binomialParams[1]}`
 changeSFXCount.value = `${runningMethods}`;
 changeSFXCD.value = `${maxRandomInterval}`;
 ignoreUntagged.checked = shouldIgnoreUntagged;
@@ -195,6 +209,35 @@ const changeConfig: changeConfig = (e) => {
             queueCapEl.style.backgroundColor = "#ff0000"
         }
 
+    } else if (e === changeConfigOpts.ShouldBinomial) {
+
+        useBinomial = shouldBinomial.checked;
+        config.useBinomial = shouldBinomial.checked;
+
+        window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.BinomialTrials || e === changeConfigOpts.BinomialProb) {
+
+        if (Number.parseInt(binomialTrials.value) && Number.parseFloat(binomialProb.value)) {
+
+            binomialTrials.style.backgroundColor = "#2bff00"
+            binomialProb.style.backgroundColor = "#2bff00"
+
+            binomialParams[0] = Number.parseInt(binomialTrials.value);
+            binomialParams[1] = Number.parseFloat(binomialProb.value);
+
+            config.binomialTrials = binomialParams[0];
+            config.binomialProb = binomialParams[1];
+
+            window.api.setConfig(config);
+
+        } else {
+
+            binomialTrials.style.backgroundColor = "#ff0000";
+            binomialProb.style.backgroundColor = "#ff0000";
+
+        }
+
     } else if (e === changeConfigOpts.Reload) {
 
         window.api.reload('main');
@@ -206,6 +249,9 @@ directorySelector.addEventListener('input', () => changeConfig(changeConfigOpts.
 ignoredFolders.addEventListener('input', () => changeConfig(changeConfigOpts.IgnoreFolders));
 capQueueEl.addEventListener('click', () => changeConfig(changeConfigOpts.CapQueue));
 queueCapEl.addEventListener('input', () => changeConfig(changeConfigOpts.QueueCap));
+shouldBinomial.addEventListener('click', () => changeConfig(changeConfigOpts.ShouldBinomial));
+binomialTrials.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialTrials));
+binomialProb.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialProb));
 submitReload.addEventListener('click', () => changeConfig(changeConfigOpts.Reload));
 
 volumeSlider.addEventListener('change', () => {
@@ -390,6 +436,16 @@ const halt = async () => {
 const runSFX = async () => {
 
     if (!sfxEnabled) return;
+
+    if (useBinomial) {
+        let x = window.api.choose.binomial(...binomialParams);
+
+        if (x == 0) {
+            console.log('obstructed by binomial')
+            return halt();
+        }
+    }
+
     if (queue.length >= maxQueue) {
         if (capQueue) stopSpawn = true;
     }
