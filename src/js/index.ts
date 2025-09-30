@@ -1,9 +1,27 @@
 
+enum changeConfigOpts {
+    Directory = 'directory',
+    IgnoreFolders = 'ignoreFolders',
+    IgnoreUntagged = 'ignoredUntagged',
+    MinQueueTime = 'minQueueTime',
+    Volume = 'volume',
+    CapQueue = 'capQueue',
+    QueueCap = 'queueCap',
+    Reload = 'reload'
+}
+
 const { audio, config } = window.api.init();
 const ctx = new (window.AudioContext)();
 const masterGain = ctx.createGain();
 masterGain.gain.value = 1;
-masterGain.connect(ctx.destination);
+const comp = ctx.createDynamicsCompressor();
+comp.threshold.value = -24;
+comp.knee.value = 30;
+comp.ratio.value = 12;
+comp.attack.value = 0.003;
+comp.release.value = 0.25;
+masterGain.connect(comp);
+comp.connect(ctx.destination);
 
 const setMasterVolume = (v: number) => {
     const now = ctx.currentTime;
@@ -16,6 +34,10 @@ const connectElementToMaster = (element: HTMLAudioElement) => {
     return node;
 }
 
+let random
+let maxQueue = 50;
+let capQueue = false;
+let stopSpawn = false;
 let sfxEnabled = false;
 let runningMethods = 1;
 let isTesting = window.api.isDev();
@@ -26,18 +48,33 @@ let shouldIgnoreUntagged = config.ignoreUntagged;
 //let nowPlaying = document.getElementById('nowPlaying') as HTMLParagraphElement;
 
 let toggleSFXB = document.getElementById('toggleSFX') as HTMLButtonElement;
+
 let changeSFXCount = document.getElementById('changeSFXCount') as HTMLInputElement;
+
 let changeSFXCD = document.getElementById('changeSFXCD') as HTMLInputElement;
+
 let minQueueTime = document.getElementById('changeQueueTime') as HTMLInputElement;
+let minQueueTimeLab = document.getElementById('changeQueueTimeLab') as HTMLLabelElement;
+
 let volumeSlider = document.getElementById('volume') as HTMLInputElement;
-//let minQueueTimeLab = document.getElementById('changeQueueTimeLab') as HTMLLabelElement;
+
 let settings = document.getElementById('settings') as HTMLDivElement;
+let submitReload = document.getElementById('reloadApp') as HTMLButtonElement;
+
 let directorySelector = document.getElementById('changeDir') as HTMLInputElement;
-//let dirSelLabel = document.getElementById('changeDirLab') as HTMLLabelElement;
+let dirSelLabel = document.getElementById('changeDirLab') as HTMLLabelElement;
+
 let ignoredFolders = document.getElementById('ignoredFolders') as HTMLInputElement;
-//let ignoreFolLab = document.getElementById('ignoreFolLab') as HTMLLabelElement;
+let ignoreFolLab = document.getElementById('ignoreFolLab') as HTMLLabelElement;
+
 let ignoreUntagged = document.getElementById('ignoreUntagged') as HTMLInputElement;
-//let ignoreUnLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelElement;
+let ignoreUnLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelElement;
+
+let capQueueEl = document.getElementById('capQueue') as HTMLInputElement;
+let capQueueLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelElement;
+
+let queueCapEl = document.getElementById('queueCap') as HTMLInputElement;
+let queueCapLab = document.getElementById('queueCapLab') as HTMLLabelElement;
 
 settings.style.display = 'none';
 changeSFXCount.value = `${runningMethods}`;
@@ -72,49 +109,107 @@ volumeSlider.addEventListener('input', () => {
 
 
 const changeConfig: changeConfig = (e) => {
-        if (e === 'directory') {
+        if (e === changeConfigOpts.Directory) {
+            if (directorySelector.value == "") {
+
+                directorySelector.style.backgroundColor = "";
+                return;
+
+            }
+
             if (window.api.dirExists(directorySelector.value)) {
 
-            console.log('changeDirectory value is good')
+                console.log('changeDirectory value is good');
 
-            directorySelector.style.backgroundColor = "#2bff00"
-            config.directory = directorySelector.value;
+                directorySelector.style.backgroundColor = "#2bff00";
+                config.directory = directorySelector.value;
 
-            window.api.setConfig(config);
+                dirSelLabel.style.color = "#ff0000"
 
-            window.api.reload('main')
+                window.api.setConfig(config);
+
         } else {
 
             console.log('changeDirectory value is bad')
 
             directorySelector.style.backgroundColor = "#ff0000"
         }
-    } else if (e === 'ignoreFolders') {
-        const toIgnore: string[] = []
-        try {
-            toIgnore.push(...ignoredFolders.value.split(','));
-        } catch {
-            ignoredFolders.style.backgroundColor = "#ff0000"
+    } else if (e === changeConfigOpts.IgnoreFolders) {
+
+        if (ignoredFolders.value == "") {
+            ignoredFolders.style.backgroundColor = "";
             return;
         }
 
-        ignoredFolders.style.backgroundColor = "#2bff00"
-        config.ignoredFolders = toIgnore;
+        const toIgnore: string[] = []
+            try {
+                toIgnore.push(...ignoredFolders.value.split(','));
+            } catch {
+                ignoredFolders.style.backgroundColor = "#ff0000"
+                return;
+            }
 
-        window.api.setConfig(config);
+            ignoredFolders.style.backgroundColor = "#2bff00"
+            config.ignoredFolders = toIgnore;
 
-        window.api.reload('main')
-    } else if (e === 'ignoreUntagged') {
+            ignoreFolLab.style.color = "#ff0000"
+
+            window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.IgnoreUntagged) {
+
         config.ignoreUntagged = ignoreUntagged.checked;
 
+        ignoreUnLab.style.color = "#ff0000";
+
         window.api.setConfig(config);
-    } else if (e === 'volume') {
+
+    } else if (e === changeConfigOpts.Volume) {
+
         window.api.setConfig(config);
-    } 
+
+    } else if (e === changeConfigOpts.CapQueue) {
+
+        console.log('clicked')
+
+        capQueue = capQueueEl.checked;
+        
+        config.capQueue = capQueueEl.checked;
+
+        window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.QueueCap) {
+
+        if (queueCapEl.value == "") {
+            queueCapEl.style.backgroundColor = "";
+            return;
+        }
+
+        if (Number.parseInt(queueCapEl.value)) {
+
+            queueCapEl.style.backgroundColor = "#2bff00"
+            config.queueCap = queueCapEl.valueAsNumber;
+
+            window.api.setConfig(config);
+        } else {
+            queueCapEl.style.backgroundColor = "#ff0000"
+        }
+
+    } else if (e === changeConfigOpts.Reload) {
+
+        window.api.reload('main');
+
+    }
 }
 
+directorySelector.addEventListener('input', () => changeConfig(changeConfigOpts.Directory));
+ignoredFolders.addEventListener('input', () => changeConfig(changeConfigOpts.IgnoreFolders));
+capQueueEl.addEventListener('click', () => changeConfig(changeConfigOpts.CapQueue));
+queueCapEl.addEventListener('input', () => changeConfig(changeConfigOpts.QueueCap));
+submitReload.addEventListener('click', () => changeConfig(changeConfigOpts.Reload));
+
 volumeSlider.addEventListener('change', () => {
-    changeConfig('volume');
+    changeConfig(changeConfigOpts.Volume);
 })
 
 const toggleSFX = () => {
@@ -130,7 +225,7 @@ const toggleSFX = () => {
         sfxEnabled = true;
         for (let i = 0; i < runningMethods; i++) {
             console.log('ran SFX')
-            setTimeout(runSFX, Math.floor(Math.random() * maxRandomInterval))
+            setTimeout(runSFX, Math.floor(Math.random() * maxRandomInterval));
         }
         console.log('enabled!');
         return [`success`, `sfx has been enabled`]
@@ -168,7 +263,7 @@ const changeSFXParams = (e: 'methodCount' | 'methodTime' | 'ignoreUntagged') => 
         if (typeof ignoreUntagged.checked === "boolean") {
             shouldIgnoreUntagged = ignoreUntagged.checked;
 
-            changeConfig('ignoreUntagged');
+            changeConfig(changeConfigOpts.IgnoreUntagged);
 
             return [`success`, `stored ${ignoreUntagged.checked} boolean in shouldIgnoreUntagged: ${shouldIgnoreUntagged}`];
         } else {
@@ -193,8 +288,9 @@ const changeSFXParams = (e: 'methodCount' | 'methodTime' | 'ignoreUntagged') => 
 
 const nextAudio = (sfx: HTMLAudioElement) => {
 
-    let queueCheck = queue.shift();
+    let queueCheck = queue.shift()
     if (queueCheck?.loc) {
+        queueCheck.volume = connectElementToMaster(sfx);
         isPlaying.push(queueCheck)
     } else {
         return;
@@ -232,13 +328,16 @@ const nextAudio = (sfx: HTMLAudioElement) => {
     //nowPlaying.innerText = `${queueCheck.loc.split('/')[queueCheck.loc.split('/').length - 1]}`;
 
     console.log('played sound!');
+
+    if (queue.length <= (maxQueue - 20))
+        stopSpawn = false;
 }
 
 const playAudio = async () => {
     let sfx = new Audio(queue[0].loc);
     let sfxTag = queue[0].tag;
 
-    queue[0].volume = connectElementToMaster(sfx)
+    //sfx.muted = true;
 
     const getAudioDuration = (sfx: HTMLAudioElement): Promise<number> => {
 
@@ -281,17 +380,27 @@ const playAudio = async () => {
     }
 }
 
+const halt = async () => {
+    while(stopSpawn)
+        await sleep()
+
+    setTimeout(runSFX, Math.floor(Math.random() * maxRandomInterval));
+}
+
 const runSFX = async () => {
 
     if (!sfxEnabled) return;
+    if (queue.length >= maxQueue) {
+        if (capQueue) stopSpawn = true;
+    }
 
-    let num = Math.floor(Math.random() * audio.length);
+    let sfx = window.api.choose.choice(audio) as loadedAudio;
 
-    queue.unshift(audio[num]);
+    queue.unshift(sfx);
 
-    console.log(`${audio[num].loc}\n${audio[num].tag}\nAudio Length: ${audio.length - 1} / ${audio.length}`)
+    console.log(`${sfx.loc}\n${sfx.tag}\nAudio Length: ${audio.length - 1} / ${audio.length}`)
 
     await playAudio();
 
-    setTimeout(runSFX, Math.floor(Math.random() * maxRandomInterval));
+    halt()
 }

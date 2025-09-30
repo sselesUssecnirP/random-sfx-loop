@@ -3,6 +3,7 @@ import { contextBridge, ipcRenderer } from 'electron/renderer';
 import { readdirSync, writeFileSync, readFileSync, mkdirSync, existsSync, Dirent } from 'node:fs';
 import { AsciiTable3, AlignmentEnum } from 'ascii-table3';
 import { performance } from 'node:perf_hooks';
+import random from 'random';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 
@@ -20,7 +21,9 @@ const api: API = {
             directory: "",
             ignoredFolders: [],
             ignoreUntagged: false,
-            volume: 75
+            volume: 75,
+            capQueue: false,
+            queueCap: 50
         };
 
         if (!existsSync(configPath)) {
@@ -107,7 +110,21 @@ const api: API = {
         writeFileSync(path.join(configPath, 'config.json'), JSON.stringify(config, null, 2), { encoding: 'utf-8' });
     }, // End of setConfig()
     reload: (e: string) => ipcRenderer.send('reload', e),
-    isDev: async () => { return await ipcRenderer.invoke('isDev') }
+    isDev: async () => { return await ipcRenderer.invoke('isDev') },
+    choose: {
+        binomial: (n?: number, p?: number) => {
+            return random.binomial(n, p)();
+        },
+        normal: (mu?: number, sigma?: number) => {
+            return random.normal(mu, sigma)();
+        },
+        uniformInt: (min: number, max: number) => {
+            return random.uniformInt(min, max)();
+        },
+        choice: (array: Array<number>) => {
+            return random.choice(array)
+        }
+    }
 
 
 }

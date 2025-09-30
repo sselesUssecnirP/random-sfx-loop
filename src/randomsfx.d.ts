@@ -1,27 +1,35 @@
 
 declare global {
     type FilePath = string & { __brand: "FilePath" }
-
-    type changeConfig = (e: 'directory' | 'ignoreFolders' | 'ignoreUntagged' | 'minQueueTime' | 'volume') => void
+    
+    type changeConfig = (e: changeConfigOpts) => void
 
     type API = {
         init: () => initReturn,
         dirExists: (dir: string) => boolean,
         setConfig: (config: config) => void,
         reload: (e: string) => void,
-        isDev: () => any
+        isDev: () => any,
+        choose: {
+            binomial: Random.binomial,
+            normal: Random.normal,
+            uniformInt: Random.uniformInt,
+            choice: Random.choice
+        }
     }
 
     type config = {
         directory: string,
         ignoredFolders: string[],
         ignoreUntagged: true | false,
-        volume?: number
+        volume?: number,
+        capQueue?: boolean,
+        queueCap?: number
     }
 
     type loadedAudio = {
         loc: FilePath,
-        tag: 'song' | 'sfx' | undefined,
+        tag?: 'song' | 'sfx',
         duration: number,
         src?: string,
         volume?: MediaElementAudioSourceNode
