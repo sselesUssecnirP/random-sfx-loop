@@ -16,7 +16,7 @@ enum changeConfigOpts {
 const { audio, config } = window.api.init();
 const ctx = new (window.AudioContext)();
 const masterGain = ctx.createGain();
-masterGain.gain.value = 1;
+masterGain.gain.value = config.volume ? config.volume / 100 : 1;
 const comp = ctx.createDynamicsCompressor();
 comp.threshold.value = -24;
 comp.knee.value = 30;
@@ -96,7 +96,6 @@ changeSFXCD.value = `${maxRandomInterval}`;
 ignoreUntagged.checked = shouldIgnoreUntagged;
 minQueueTime.value = `${minQueueSong}`;
 volumeSlider.value = `${config.volume}`;
-setMasterVolume(config.volume ?? 75 / 100);
 
 const isPlaying: Array<loadedAudio> = [];
 const queue: Array<loadedAudio> = [];
@@ -108,7 +107,6 @@ const sleep = async (ms: number = 1000) => {
     });
 }
 
-
 const openSettings = () => {
     console.log(settings.style.display)
 
@@ -116,11 +114,9 @@ const openSettings = () => {
 }
 
 volumeSlider.addEventListener('input', () => {
-    config.volume = volumeSlider.valueAsNumber
-    setMasterVolume(volumeSlider.valueAsNumber / 100)
+    config.volume = Number.parseInt(volumeSlider.value)
+    setMasterVolume(Number.parseInt(volumeSlider.value) / 100)
 });
-
-
 
 const changeConfig: changeConfig = (e) => {
         if (e === changeConfigOpts.Directory) {
@@ -202,7 +198,7 @@ const changeConfig: changeConfig = (e) => {
         if (Number.parseInt(queueCapEl.value)) {
 
             queueCapEl.style.backgroundColor = "#2bff00"
-            config.queueCap = queueCapEl.valueAsNumber;
+            config.queueCap = Number.parseInt(queueCapEl.value);
 
             window.api.setConfig(config);
         } else {
@@ -256,7 +252,7 @@ submitReload.addEventListener('click', () => changeConfig(changeConfigOpts.Reloa
 
 volumeSlider.addEventListener('change', () => {
     changeConfig(changeConfigOpts.Volume);
-})
+});
 
 const toggleSFX = () => {
 
