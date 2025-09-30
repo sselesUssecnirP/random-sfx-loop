@@ -1,6 +1,6 @@
 {
   "name": "random-sfx-loop",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "plays random sfx at random intervals",
   "icon": "icon.ico",
   "main": "./dist/start.js",
