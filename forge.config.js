@@ -3,6 +3,8 @@ const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 const { MakerRpm } = require('@electron-forge/maker-rpm');
 const { MakerDMG } = require('@electron-forge/maker-dmg');
+const { MakerFlatpak } = require('@electron-forge/maker-flatpak');
+const { MakerSnap } = require('@electron-forge/maker-snap');
 const { PublisherGithub } = require('@electron-forge/publisher-github');
 const { AutoUnpackNativesPlugin } = require('@electron-forge/plugin-auto-unpack-natives');
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
@@ -42,7 +44,6 @@ const config = {
       },
       ['linux']
     ),
-
     new MakerDeb(
       {
         options: {
@@ -54,6 +55,14 @@ const config = {
       },
       ['linux']
     ),
+    new MakerFlatpak({
+      options: {
+        categories: ['Audio']
+      }
+    }, ['linux']),
+    new MakerSnap({}, ['linux'])
+    // Flatpack and Snap packages will be built, but only released via GitHub for now for manual installation. 
+    // Flathub and Snapcraft.io support may come in the future, so I've opted to leave these here as a reminder.
   ],
 
   plugins: [
