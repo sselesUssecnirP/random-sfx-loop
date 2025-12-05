@@ -2,7 +2,8 @@ const { MakerSquirrel } = require('@electron-forge/maker-squirrel');
 const { MakerZIP } = require('@electron-forge/maker-zip');
 const { MakerDeb } = require('@electron-forge/maker-deb');
 const { MakerRpm } = require('@electron-forge/maker-rpm');
-const { MakerDMG } = require('@electron-forge/maker-dmg')
+const { MakerDMG } = require('@electron-forge/maker-dmg');
+const { PublisherGithub } = require('@electron-forge/publisher-github');
 const { AutoUnpackNativesPlugin } = require('@electron-forge/plugin-auto-unpack-natives');
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
@@ -67,6 +68,14 @@ const config = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  publishers: [
+    new PublisherGithub({
+      repository: {
+        owner: 'sselesUssecnirP',
+        name: 'random-sfx-loop'
+      }
+    })
+  ]
 };
 
 module.exports = config;

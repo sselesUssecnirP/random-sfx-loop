@@ -18,6 +18,8 @@
 
     "build": "npm run package && npm run make",
 
+    "publish": "electron forge publish",
+
     "version": "node version"
   },
   "author": "sselesUssecnirP",
