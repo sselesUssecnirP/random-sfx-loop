@@ -13,7 +13,7 @@ jobs:
   build_on_linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@latest
       with:
         node-version: 24
@@ -30,7 +30,7 @@ jobs:
   build_on_max:
     runs-on: macos-latest
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@latest
       with:
         node-version: 24
@@ -47,7 +47,7 @@ jobs:
   build_on_win:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@latest
+    - uses: actions/checkout@v4
     - uses: actions/setup-node@latest
       with:
         node-version: 24
