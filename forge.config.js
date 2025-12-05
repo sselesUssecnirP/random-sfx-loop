@@ -54,12 +54,12 @@ const config = {
         },
       },
       ['linux']
-    ),
+    )/*,
     new MakerFlatpak({
       options: {
         categories: ['Audio']
       }
-    }, ['linux'])/*,
+    }, ['linux']),
     new MakerSnap({
       features: {
         audio: true,

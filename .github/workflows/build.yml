@@ -55,12 +55,6 @@ jobs:
       with:
         node-version: 24
 
-    - name: install flatpak build tools
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y flatpak flatpak-builder elfutils
-        sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
     - name: install dependencies
       run: npm ci
 
