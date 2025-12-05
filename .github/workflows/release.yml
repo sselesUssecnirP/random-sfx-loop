@@ -63,7 +63,8 @@ jobs:
 
     - name: install snapcraft
       run: |
-        sudo snap install snapcraft --classic
+        sudo snap install snapcraft --classic --channel=7.x/stable
+
 
 
     - name: install dependencies
