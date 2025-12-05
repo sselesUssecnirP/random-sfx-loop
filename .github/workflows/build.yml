@@ -3,9 +3,6 @@ on:
   push:
     branches:
       - test
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -63,5 +60,3 @@ jobs:
 
     - name: build
       run: npm run build
-    env:
-        SNAPCRAFT_BUILD_ENVIRONMENT: host

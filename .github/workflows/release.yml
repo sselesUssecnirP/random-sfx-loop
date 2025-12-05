@@ -1,7 +1,8 @@
-name: Build
+name: Release
 on:
   release:
-    types: [prereleased]
+    types:
+        - created
 
 jobs:
   release:
@@ -31,12 +32,11 @@ jobs:
     - name: compile
       run: npm run compile
 
-    - name: build
-      run: npm run build
-
     - name: publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run publish
-  
+
   release-linux:
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -59,11 +59,8 @@ jobs:
 
     - name: compile
       run: npm run compile
-
-    - name: build
-      run: npm run build
     
     - name: publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run publish
-    env:
-        SNAPCRAFT_BUILD_ENVIRONMENT: host
