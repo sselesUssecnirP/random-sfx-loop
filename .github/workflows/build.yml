@@ -10,53 +10,25 @@ on:
       - test
 
 jobs:
-  build_on_linux:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 24
-
-    - name: install dependencies
-      run: npm ci
-    
-    - name: compile
-      run: npm run compile
-
-    - name: build
-      run: npm run build
-
-  build_on_mac:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: actions/setup-node@v4
-      with:
-        node-version: 24
-
-    - name: install dependencies
-      run: npm ci
-    
-    - name: compile
-      run: npm run compile
-
-    - name: build
-      run: npm run build
-
-  build_on_win:
-    runs-on: windows-latest
+  build:
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        platform: [ia32, amd64, arm64]
+        platform: [amd64lin, arm64lin, amd64win, arm64win, amd64mac, arm64mac]
         include:
-          - platform: ia32
+          - platform: amd64lin
+            runner: ubuntu-latest
+          - platform: arm64lin
+            runner: ubuntu-24.04-arm
+          - platform: amd64mac
+            runner: macos-15-intel
+          - platform: arm64mac
+            runner: macos-latest
+          - platform: amd64win
             runner: windows-latest
-          - platform: amd64
-            runner: windows-latest
-          - platform: arm64
-            runner: windows-latest
-            
+          - platform: arm64win
+            runner: windows-11-arm
+
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
