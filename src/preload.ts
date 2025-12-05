@@ -7,10 +7,8 @@ import random from 'random';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 
-
-const configPath = path.join(process.env.LOCALAPPDATA as string, 'sselesUssecnirP', 'random-sfx');
+const configPath = process.env.RSL_CONFIG_PATH as string;
 const sfxTable = new AsciiTable3().setHeading('file');
-
 
 const api: API = {
     init: () => {
