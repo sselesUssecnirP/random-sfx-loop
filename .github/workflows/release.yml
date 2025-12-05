@@ -1,0 +1,65 @@
+name: Release
+on:
+  release:
+    types: [created, prereleased]
+
+jobs:
+  release:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        platform: [amd64win, arm64win, amd64mac, arm64mac]
+        include:
+          - platform: amd64mac
+            runner: macos-15-intel
+          - platform: arm64mac
+            runner: macos-latest
+          - platform: amd64win
+            runner: windows-latest
+          - platform: arm64win
+            runner: windows-11-arm
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: install dependencies
+      run: npm ci
+
+    - name: compile
+      run: npm run compile
+
+    - name: publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm run publish
+
+  release-linux:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        platform: [amd64lin, arm64lin]
+        include:
+          - platform: amd64lin
+            runner: ubuntu-latest
+          - platform: arm64lin
+            runner: ubuntu-24.04-arm
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+
+    - name: install dependencies
+      run: npm ci
+
+    - name: compile
+      run: npm run compile
+    
+    - name: publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm run publish
