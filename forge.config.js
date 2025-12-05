@@ -59,13 +59,13 @@ const config = {
       options: {
         categories: ['Audio']
       }
-    }, ['linux']),
+    }, ['linux'])/*,
     new MakerSnap({
       features: {
         audio: true,
         //mpris: 'com.sselesussecnirp.randomsfx'
       }
-    }, ['linux'])
+    }, ['linux'])*/
     // Flatpack and Snap packages will be built, but only released via GitHub for now for manual installation. 
     // Flathub and Snapcraft.io support may come in the future, so I've opted to leave these here as a reminder.
   ],
