@@ -1,0 +1,62 @@
+name: Build
+on:
+  push:
+    branches:
+      - main
+      - test
+  pull_request:
+    branches:
+      - main
+      - test
+
+jobs:
+  build_on_linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@latest
+    - uses: actions/setup-node@latest
+      with:
+        node-version: 24
+
+    - name: install dependencies
+      run: npm ci
+    
+    - name: compile
+      run: npm run compile
+
+    - name: build
+      run: npm run build
+
+  build_on_max:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@latest
+    - uses: actions/setup-node@latest
+      with:
+        node-version: 24
+
+    - name: install dependencies
+      run: npm ci
+    
+    - name: compile
+      run: npm run compile
+
+    - name: build
+      run: npm run build
+
+  build_on_win:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@latest
+    - uses: actions/setup-node@latest
+      with:
+        node-version: 24
+
+    - name: install dependencies
+      run: npm ci
+    
+    - name: compile
+      run: npm run compile
+
+    - name: build
+      run: npm run build

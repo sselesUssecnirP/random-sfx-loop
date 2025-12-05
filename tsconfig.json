@@ -2,7 +2,7 @@
   "compilerOptions": {
       "target": "ESNext",
       "module": "commonjs",
-      "rootDir": "./src/",
+      "rootDir": "src",
       "outDir": "./dist/",
       "strict": true,
       "moduleResolution": "node",
@@ -23,7 +23,8 @@
       "src/start.ts"
   ],
   "include": [
-      "./**/*.ts"
+      "./**/*.ts",
+      "forge.config.ts"
   ],
   "exclude": [
       "node_modules",

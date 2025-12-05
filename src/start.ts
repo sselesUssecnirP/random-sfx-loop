@@ -15,6 +15,7 @@ updateElectronApp({
 
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import path from 'node:path';
+process.env.RSL_CONFIG_PATH = path.join(app.getPath('userData'));
 const windows: Array<[string, number]> = [];
 const isDev = !app.isPackaged;
 console.log(isDev)
@@ -80,4 +81,4 @@ ipcMain.addListener('reload', (event, name: string) => {
 
 ipcMain.handle('isDev', () => {
     return isDev;
-})
+});
