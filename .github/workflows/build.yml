@@ -27,7 +27,7 @@ jobs:
     - name: build
       run: npm run build
 
-  build_on_max:
+  build_on_mac:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v4
@@ -46,6 +46,17 @@ jobs:
 
   build_on_win:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        platform: [ia32, amd64, arm64]
+        include:
+          - platform: ia32
+            runner: windows-latest
+          - platform: amd64
+            runner: windows-latest
+          - platform: arm64
+            runner: windows-latest
+            
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4

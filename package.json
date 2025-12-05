@@ -8,10 +8,17 @@
     "dev": "tsc --watch",
     "test": "electron .",
     "start": "electron-forge start",
+
+
     "compile": "tsc",
+
+
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "build": "npm run package && npm run make"
+
+    "build": "npm run package && npm run make",
+
+    "version": "node version"
   },
   "author": "sselesUssecnirP",
   "license": "MIT",

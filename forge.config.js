@@ -21,10 +21,10 @@ const config = {
         setupIcon: './assets/icon.ico',
         noMsi: true,
       },
-      ['win64', 'win32']
+      ['win32']
     ),
 
-    new MakerZIP({}, ['darwin', 'win32', 'win64', 'linux']),
+    new MakerZIP({}, ['darwin', 'win32', 'linux']),
 
     new MakerDMG({
       name: 'RandomSFX'
