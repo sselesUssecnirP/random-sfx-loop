@@ -3,6 +3,9 @@ on:
   release:
     types: [created, prereleased]
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ${{ matrix.runner }}
