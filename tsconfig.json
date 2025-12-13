@@ -1,11 +1,11 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
-        "module": "commonjs",
+        "target": "esnext",
+        "module": "nodenext",
         "rootDir": "src",
         "outDir": "./dist/",
         "strict": true,
-        "moduleResolution": "node",
+        "moduleResolution": "nodenext",
         "importHelpers": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -23,8 +23,7 @@
         "src/start.ts"
     ],
     "include": [
-        "./**/*.ts",
-        "forge.config.ts"
+        "./**/*.ts"
     ],
     "exclude": [
         "node_modules",

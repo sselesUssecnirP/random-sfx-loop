@@ -1,7 +1,8 @@
-name: Release
+name: Release App
 on:
-  release:
-    types: [created, prereleased]
+  push:
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -29,16 +30,16 @@ jobs:
         node-version: 24
 
     - name: install dependencies
-      run: npm ci
+      run: npm ci --force
 
     - name: compile
       run: npm run compile
 
-    - name: publish
+    - name: full release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run publish
-
+    
   release-linux:
     runs-on: ${{ matrix.runner }}
     strategy:
@@ -57,12 +58,56 @@ jobs:
         node-version: 24
 
     - name: install dependencies
-      run: npm ci
-
+      run: npm ci --force
+      
+    - name: install ffmpeg
+      run: npm i -g ffmpeg
+      
     - name: compile
       run: npm run compile
-    
-    - name: publish
+
+    - name: full release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: npm run publish
+
+  release-zip:
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        platform: [amd64lin, arm64lin, amd64win, arm64win, amd64mac, arm64mac]
+        include:
+          - platform: amd64lin
+            runner: ubuntu-latest
+          - platform: arm64lin
+            runner: ubuntu-24.04-arm
+          - platform: amd64win
+            runner: windows-latest
+          - platform: arm64win
+            runner: windows-11-arm
+          - platform: amd64mac
+            runner: macos-15-intel
+          - platform: arm64mac
+            runner: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Edit package.json
+        run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; pkg.isBuildZip = true; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+      
+      - name: install dependencies
+        run: npm ci --force
+
+      - name: install ffmpeg
+        run: npm i -g ffmpeg
+        
+      - name: compile
+        run: npm run compile
+
+      - name: full release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run publish

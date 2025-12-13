@@ -13,9 +13,14 @@ updateElectronApp({
   updateInterval: '1 hour'
 })
 
+import pkg from '../package.json';
+import bot from './bot/bot'
 import { app, BrowserWindow, screen, ipcMain } from 'electron';
 import path from 'node:path';
-process.env.RSL_CONFIG_PATH = path.join(app.getPath('userData'));
+import fs from 'fs'
+import { ExtendedConfig } from './bot/types/bot';
+const zipDir = path.join(path.dirname(app.getPath('exe')), 'config');
+process.env.RSL_CONFIG_PATH = pkg.isBuildZip ? path.join(zipDir) : path.join(app.getPath('userData'));
 const windows: Array<[string, number]> = [];
 const isDev = !app.isPackaged;
 console.log(isDev)
@@ -28,6 +33,8 @@ const browserPreferences = {
         }
     }
 }
+
+const config = JSON.parse(fs.readFileSync(path.join(process.env.RSL_CONFIG_PATH, 'config.json')).toString()) as config;
 
 if (require('electron-squirrel-startup')) app.quit();
 
@@ -64,6 +71,21 @@ app.whenReady().then(() => {
     if (isDev) {
         let win: BrowserWindow = BrowserWindow.getAllWindows().filter(e => e.id === windows.filter(f => f[0] === 'main')[0][1])[0]
         win.webContents.openDevTools()
+    }
+
+    // Consider hosting a discord bot myself
+    // and allow users to generate an API key
+    // in order to avoid the need for the user
+    // to create a new discord bot themselves
+
+    let botConfig: Partial<ExtendedConfig> = config
+
+    botConfig.windows = windows
+    botConfig.maxRandomInterval = 60
+
+    if (config.useDiscordBot) {
+
+        bot.run(botConfig as ExtendedConfig)
     }
 });
 

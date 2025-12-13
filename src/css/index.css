@@ -1,0 +1,123 @@
+@keyframes rainbow{
+    100%,0%{
+        color: rgb(255,0,0);
+    }
+    8%{
+        color: rgb(255,127,0);
+    }
+    16%{
+        color: rgb(255,255,0);
+    }
+    25%{
+        color: rgb(127,255,0);
+    }
+    33%{
+        color: rgb(0,255,0);
+    }
+    41%{
+        color: rgb(0,255,127);
+    }
+    50%{
+        color: rgb(0,255,255);
+    }
+    58%{
+        color: rgb(0,127,255);
+    }
+    66%{
+        color: rgb(0,0,255);
+    }
+    75%{
+        color: rgb(127,0,255);
+    }
+    83%{
+        color: rgb(255,0,255);
+    }
+    91%{
+        color: rgb(255,0,127);
+    }
+}
+
+
+html {
+    display: block;
+    text-align: center;
+    background-color: #202225;
+    color: #40444b;
+}
+
+div#settings {
+    display: none;
+    background-color: #a8a8a8;
+    top: 100px;
+    right: 50px;
+    left: 50px;
+    bottom: 50px;
+    padding: 9vh;
+    position: absolute;
+    z-index: 10;
+}
+
+p#requiresReload {
+    position: absolute;
+    top: 1px;
+    left: 10px;
+    color: #ff0000;
+}
+
+div:not(#settings) {
+    margin-top: 30vh
+}
+
+button:not(#toggleSFX), label, input {
+    margin-top: 5px;
+}
+
+button {
+    margin-top: 0px;
+    padding: 10px;
+    background-color: #2f3136;
+    border: none;
+    border-radius: 10px;
+    font-size: 40px;
+}
+
+button#reloadApp {
+    padding: 7.5px;
+    margin-top: 30px;
+    font-size: 20px;
+    background-color: #424242;
+    color: #d8d695;
+}
+
+button#reloadApp:hover {
+    animation: none;
+    animation-iteration-count: unset;
+    background-color: #e6e4df;
+    color: #27296a;
+}
+
+button:hover {
+    background-color: #191b20;
+    animation: rainbow 1.25s linear;
+    animation-iteration-count: infinite;
+    border: none;
+    border-radius: 10px;
+    font-size: 40px;
+}
+
+#openSettings {
+    animation: none;
+    animation-iteration-count: unset;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 20px;
+    padding: 7.5px;
+}
+
+#volumeSlider {
+    position: absolute;
+    bottom: 10px;
+    left: 34%;
+    color: aqua;
+}
