@@ -1,7 +1,7 @@
 
 import { contextBridge, ipcRenderer } from 'electron/renderer';
 import { readdirSync, writeFileSync, readFileSync, mkdirSync, existsSync, Dirent } from 'node:fs';
-import { AsciiTable3, AlignmentEnum } from 'ascii-table3';
+import { AsciiTable3 } from 'ascii-table3';
 import { performance } from 'node:perf_hooks';
 import random from 'random';
 import { pathToFileURL } from 'node:url';
@@ -21,11 +21,11 @@ const api: API = {
             ignoreUntagged: false,
             volume: 75,
             capQueue: false,
-            queueCap: 50
+            queueCap: 50,
+            useDiscordBot: false
         };
 
-        if (!existsSync(configPath)) {
-            mkdirSync(configPath, { recursive: true });
+        if (!existsSync(path.join(configPath, 'config.json'))) {
             writeFileSync(path.join(configPath, 'config.json'), JSON.stringify(defaultConfig, null, 2), { encoding: 'utf-8' });
         }
 
@@ -92,8 +92,10 @@ const api: API = {
         };
         
         const t0 = performance.now()
-        searchAudio(path.join(config.directory));
+        if (!config.useDiscordBot)
+            searchAudio(path.join(config.directory));
         const t1 = performance.now()
+        
         console.log(`Found ${audio.length} files in ${(t1 - t0).toFixed(1)}ms`)
 
 
@@ -123,7 +125,6 @@ const api: API = {
             return random.choice(array)
         }
     }
-
 
 }
 

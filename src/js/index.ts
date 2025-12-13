@@ -10,6 +10,9 @@ enum changeConfigOpts {
     ShouldBinomial = 'shouldBinomial',
     BinomialTrials = 'binomialTrials',
     BinomialProb = 'binomialProb',
+    ShouldDiscordBot = 'shouldDiscordBot',
+    DiscordBotToken = 'discordBotToken',
+    DiscordBotClient = 'discordBotClient',
     Reload = 'reload'
 }
 
@@ -37,7 +40,17 @@ const connectElementToMaster = (element: HTMLAudioElement) => {
     return node;
 }
 
+(() => {
+    let text = document.getElementById('requiresReload') as HTMLParagraphElement;
+
+    if (!config.useDiscordBot)
+        return;
+
+    text!.innerText = `${text!.innerText} (useDiscordBot = true, please SUBMIT then fully restart the app for changes to take affect)`
+})()
+
 let useBinomial = config.useBinomial ?? false;
+let useDiscordBot = config.useDiscordBot ?? false;
 let binomialParams = [config.binomialTrials ?? 1, config.binomialProb ?? 0.5];
 let maxQueue = config.queueCap ?? 50;
 let capQueue = config.capQueue ?? false;
@@ -48,44 +61,85 @@ let isTesting = window.api.isDev();
 let maxRandomInterval = isTesting ? 1 : 120;
 let minQueueSong = 60;
 let shouldIgnoreUntagged = config.ignoreUntagged ?? false;
+let shouldReload: Array<changeConfigOpts> = [];
+
+const toLoad: Array<loadElements> = [
+    { id: `toggleSFX`, hasLabel: false, type: 'button' },
+    { id: `changeSFXCount`, hasLabel: false, type: `input` },
+    { id: `changeSFXCD`, hasLabel: false, type: 'input' },
+    { id: `changeQueueTime`, hasLabel: true, type: `input` },
+    { id: `volumeSlider`, hasLabel: false, type: `input` },
+    { id: `settings`, hasLabel: false, type: `div` },
+    { id: `reloadApp`, hasLabel: false, type: 'button' },
+    { id: `changeDir`, hasLabel: true, type: `input` },
+    { id: `ignoredFolders`, hasLabel: true, type: `input` },
+    { id: `ignoreUntagged`, hasLabel: true, type: `input` },
+    { id: `capQueueEl`, hasLabel: true, type: 'input' },
+    { id: `queueCap`, hasLabel: true, type: `input` },
+    { id: `shouldDiscordBot`, hasLabel: true, type: `input` },
+    { id: `discordBotToken`, hasLabel: true, type: `input` },
+    { id: `discordBotClient`, hasLabel: true, type: `input` },
+    { id: `shouldBinomial`, hasLabel: true, type: `input` },
+    { id: `binomialTrials`, hasLabel: true, type: `input` },
+    { id: `binomialProb`, hasLabel: true, type: `input` },
+    { id: `minQueueTime`, hasLabel: true, type: `input` }
+]
+
+const loadedDOMElements: Partial<loadedDOMElements> = {};
+
+const getElement = <E extends loadElements>(e: E): elementMap[E['type']] => document.getElementById(e.id) as elementMap[E['type']];
+const getLabelElement = <L extends loadLabels>(e: L): labelElementMap[L['type']] => document.getElementById(e.id) as labelElementMap[L['type']];
+
+for (const e of toLoad) {
+
+    let label: loadLabels = {
+        id: `toggleSFXLab`,
+        type: 'label'
+    };
+
+    if (e.hasLabel)
+        label.id = `${e.id}Lab`
+
+    loadedDOMElements[e.id] = getElement(e);
+    if (e.hasLabel)
+        loadedDOMElements[`${e.id}Lab`] = getLabelElement(label)
+}
+
+const {
+    settings,
+    shouldBinomial,
+    shouldBinomialLab,
+    binomialProb,
+    binomialTrials,
+    binomialTrialsLab,
+    binomialProbLab,
+    changeSFXCount,
+    changeSFXCD,
+    changeDir,
+    changeDirLab,
+    changeQueueTime,
+    changeQueueTimeLab,
+    queueCapLab,
+    queueCap,
+    capQueueEl,
+    capQueueElLab,
+    shouldDiscordBot,
+    discordBotClient,
+    discordBotToken,
+    discordBotClientLab,
+    discordBotTokenLab,
+    shouldDiscordBotLab,
+    ignoreUntagged,
+    ignoreUntaggedLab,
+    ignoredFolders,
+    ignoredFoldersLab,
+    minQueueTime,
+    minQueueTimeLab,
+    volumeSlider,
+    reloadApp
+} = loadedDOMElements as strictDesctructure
 
 //let nowPlaying = document.getElementById('nowPlaying') as HTMLParagraphElement;
-
-let toggleSFXB = document.getElementById('toggleSFX') as HTMLButtonElement;
-
-let changeSFXCount = document.getElementById('changeSFXCount') as HTMLInputElement;
-
-let changeSFXCD = document.getElementById('changeSFXCD') as HTMLInputElement;
-
-let minQueueTime = document.getElementById('changeQueueTime') as HTMLInputElement;
-let minQueueTimeLab = document.getElementById('changeQueueTimeLab') as HTMLLabelElement;
-
-let volumeSlider = document.getElementById('volume') as HTMLInputElement;
-
-let settings = document.getElementById('settings') as HTMLDivElement;
-let submitReload = document.getElementById('reloadApp') as HTMLButtonElement;
-
-let directorySelector = document.getElementById('changeDir') as HTMLInputElement;
-let dirSelLabel = document.getElementById('changeDirLab') as HTMLLabelElement;
-
-let ignoredFolders = document.getElementById('ignoredFolders') as HTMLInputElement;
-let ignoreFolLab = document.getElementById('ignoreFolLab') as HTMLLabelElement;
-
-let ignoreUntagged = document.getElementById('ignoreUntagged') as HTMLInputElement;
-let ignoreUnLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelElement;
-
-let capQueueEl = document.getElementById('capQueue') as HTMLInputElement;
-let capQueueLab = document.getElementById('ignoreUntaggedLab') as HTMLLabelElement;
-
-let queueCapEl = document.getElementById('queueCap') as HTMLInputElement;
-let queueCapLab = document.getElementById('queueCapLab') as HTMLLabelElement;
-
-let shouldBinomial = document.getElementById('shouldBinomial') as HTMLInputElement;
-let shouldBinomialLab = document.getElementById('shouldBinomialLab') as HTMLLabelElement;
-let binomialTrials = document.getElementById('binomialTrials') as HTMLInputElement;
-let binomialTrialsLab = document.getElementById('binomialTrialsLab') as HTMLLabelElement;
-let binomialProb = document.getElementById('binomialProb') as HTMLInputElement;
-let binomialProbLab = document.getElementById('binomialProbLab') as HTMLLabelElement;
 
 settings.style.display = 'none';
 shouldBinomial.checked = config.useBinomial ?? false;
@@ -114,44 +168,57 @@ const openSettings = () => {
 }
 
 volumeSlider.addEventListener('input', () => {
-    config.volume = Number.parseInt(volumeSlider.value)
-    setMasterVolume(Number.parseInt(volumeSlider.value) / 100)
+    config.volume = Number.parseInt(volumeSlider.value);
+    setMasterVolume(Number.parseInt(volumeSlider.value) / 100);
+    changeConfig(changeConfigOpts.Volume);
 });
 
-const changeConfig: changeConfig = (e) => {
-        if (e === changeConfigOpts.Directory) {
-            if (directorySelector.value == "") {
+const changeConfig: changeConfig = (e, isInput) => {
+    if (e === changeConfigOpts.Directory) {
 
-                directorySelector.style.backgroundColor = "";
+        if (isInput) {
+
+            if (changeDir.value == "") {
+
+                changeDir.style.backgroundColor = "";
                 return;
 
             }
-
-            if (window.api.dirExists(directorySelector.value)) {
+            
+            if (window.api.dirExists(changeDir.value)) {
 
                 console.log('changeDirectory value is good');
 
-                directorySelector.style.backgroundColor = "#2bff00";
-                config.directory = directorySelector.value;
+                changeDir.style.backgroundColor = "#2bff00";
 
-                dirSelLabel.style.color = "#ff0000"
+                changeDirLab.style.color = "#ff0000"
 
-                window.api.setConfig(config);
+                shouldReload.push(changeConfigOpts.Directory)
 
-        } else {
+            } else {
 
-            console.log('changeDirectory value is bad')
+                console.log('changeDirectory value is bad')
 
-            directorySelector.style.backgroundColor = "#ff0000"
-        }
-    } else if (e === changeConfigOpts.IgnoreFolders) {
+                changeDir.style.backgroundColor = "#ff0000"
+            }
 
-        if (ignoredFolders.value == "") {
-            ignoredFolders.style.backgroundColor = "";
             return;
         }
 
-        const toIgnore: string[] = []
+        config.directory = changeDir.value;
+
+        window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.IgnoreFolders) {
+
+        if (isInput) {
+            
+            if (ignoredFolders.value == "") {
+                ignoredFolders.style.backgroundColor = "";
+                return;
+            }
+            
+            const toIgnore: string[] = []
             try {
                 toIgnore.push(...ignoredFolders.value.split(','));
             } catch {
@@ -160,17 +227,25 @@ const changeConfig: changeConfig = (e) => {
             }
 
             ignoredFolders.style.backgroundColor = "#2bff00"
-            config.ignoredFolders = toIgnore;
 
-            ignoreFolLab.style.color = "#ff0000"
+            ignoredFoldersLab.style.color = "#ff0000"
 
-            window.api.setConfig(config);
+            shouldReload.push(changeConfigOpts.IgnoreFolders)
+        }
+
+        const toIgnore: string[] = []
+        
+        toIgnore.push(...ignoredFolders.value.split(','));
+
+        config.ignoredFolders = toIgnore;
+
+        window.api.setConfig(config);
 
     } else if (e === changeConfigOpts.IgnoreUntagged) {
 
         config.ignoreUntagged = ignoreUntagged.checked;
 
-        ignoreUnLab.style.color = "#ff0000";
+        ignoreUntaggedLab.style.color = "#ff0000";
 
         window.api.setConfig(config);
 
@@ -190,19 +265,34 @@ const changeConfig: changeConfig = (e) => {
 
     } else if (e === changeConfigOpts.QueueCap) {
 
-        if (queueCapEl.value == "") {
-            queueCapEl.style.backgroundColor = "";
+        if (isInput) {
+            if (queueCap.value == "") {
+                queueCap.style.backgroundColor = "";
+                return;
+            }
+
+            if (Number.parseInt(queueCap.value)) {
+                queueCap.style.backgroundColor = "#2bff00"
+            
+                shouldReload.push(changeConfigOpts.QueueCap)
+            } else {
+                queueCap.style.backgroundColor = "#ff0000"
+            }
+        }
+
+        if (queueCap.value == "") {
+            queueCap.style.backgroundColor = "";
             return;
         }
 
-        if (Number.parseInt(queueCapEl.value)) {
+        if (Number.parseInt(queueCap.value)) {
 
-            queueCapEl.style.backgroundColor = "#2bff00"
-            config.queueCap = Number.parseInt(queueCapEl.value);
+            queueCap.style.backgroundColor = "#2bff00"
+            config.queueCap = Number.parseInt(queueCap.value);
 
             window.api.setConfig(config);
         } else {
-            queueCapEl.style.backgroundColor = "#ff0000"
+            queueCap.style.backgroundColor = "#ff0000"
         }
 
     } else if (e === changeConfigOpts.ShouldBinomial) {
@@ -214,45 +304,90 @@ const changeConfig: changeConfig = (e) => {
 
     } else if (e === changeConfigOpts.BinomialTrials || e === changeConfigOpts.BinomialProb) {
 
-        if (Number.parseInt(binomialTrials.value) && Number.parseFloat(binomialProb.value)) {
+        if (isInput) {
+            if (Number.parseInt(binomialTrials.value) && Number.parseFloat(binomialProb.value)) {
 
-            binomialTrials.style.backgroundColor = "#2bff00"
-            binomialProb.style.backgroundColor = "#2bff00"
+                binomialTrials.style.backgroundColor = "#2bff00"
+                binomialProb.style.backgroundColor = "#2bff00"
 
-            binomialParams[0] = Number.parseInt(binomialTrials.value);
-            binomialParams[1] = Number.parseFloat(binomialProb.value);
+                binomialParams[0] = Number.parseInt(binomialTrials.value);
+                binomialParams[1] = Number.parseFloat(binomialProb.value);
 
-            config.binomialTrials = binomialParams[0];
-            config.binomialProb = binomialParams[1];
+                shouldReload.push(changeConfigOpts.BinomialProb, changeConfigOpts.BinomialTrials);
 
-            window.api.setConfig(config);
+            } else {
 
-        } else {
+                binomialTrials.style.backgroundColor = "#ff0000";
+                binomialProb.style.backgroundColor = "#ff0000";
 
-            binomialTrials.style.backgroundColor = "#ff0000";
-            binomialProb.style.backgroundColor = "#ff0000";
+            }
+        }
+
+        binomialParams[0] = Number.parseInt(binomialTrials.value);
+        binomialParams[1] = Number.parseFloat(binomialProb.value);
+
+        config.binomialTrials = binomialParams[0];
+        config.binomialProb = binomialParams[1];
+
+        window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.ShouldDiscordBot) {
+
+        useDiscordBot = shouldDiscordBot.checked;
+        config.useDiscordBot = shouldDiscordBot.checked;
+
+        window.api.setConfig(config)
+
+    } else if (e === changeConfigOpts.DiscordBotClient) {
+
+        if (isInput) {
+
+            discordBotClient.style.backgroundColor = "#2bff00"
+            shouldReload.push(changeConfigOpts.DiscordBotClient);
 
         }
 
+        config.discord_client_id = discordBotClient.value
+
+        window.api.setConfig(config);
+
+    } else if (e === changeConfigOpts.DiscordBotToken) {
+
+        if (isInput) {
+
+            discordBotToken.style.backgroundColor = "#2bff00"
+            shouldReload.push(changeConfigOpts.DiscordBotToken);
+
+        }
+
+        config.discord_token = discordBotToken.value
+
+        window.api.setConfig(config);
+
     } else if (e === changeConfigOpts.Reload) {
+
+        while (shouldReload.length > 0) {
+
+            changeConfig(shouldReload.shift()!);
+
+        }
 
         window.api.reload('main');
 
     }
 }
 
-directorySelector.addEventListener('input', () => changeConfig(changeConfigOpts.Directory));
-ignoredFolders.addEventListener('input', () => changeConfig(changeConfigOpts.IgnoreFolders));
+changeDir.addEventListener('input', () => changeConfig(changeConfigOpts.Directory, true));
+ignoredFolders.addEventListener('input', () => changeConfig(changeConfigOpts.IgnoreFolders, true));
 capQueueEl.addEventListener('click', () => changeConfig(changeConfigOpts.CapQueue));
-queueCapEl.addEventListener('input', () => changeConfig(changeConfigOpts.QueueCap));
+queueCap.addEventListener('input', () => changeConfig(changeConfigOpts.QueueCap, true));
 shouldBinomial.addEventListener('click', () => changeConfig(changeConfigOpts.ShouldBinomial));
-binomialTrials.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialTrials));
-binomialProb.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialProb));
-submitReload.addEventListener('click', () => changeConfig(changeConfigOpts.Reload));
-
-volumeSlider.addEventListener('change', () => {
-    changeConfig(changeConfigOpts.Volume);
-});
+binomialTrials.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialTrials, true));
+binomialProb.addEventListener('input', () => changeConfig(changeConfigOpts.BinomialProb, true));
+shouldDiscordBot.addEventListener('click', () => changeConfig(changeConfigOpts.ShouldDiscordBot));
+discordBotClient.addEventListener('input', () => changeConfig(changeConfigOpts.DiscordBotClient, true));
+discordBotToken.addEventListener('input', () => changeConfig(changeConfigOpts.DiscordBotToken, true));
+reloadApp.addEventListener('click', () => changeConfig(changeConfigOpts.Reload));
 
 const toggleSFX = () => {
 

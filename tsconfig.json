@@ -23,8 +23,7 @@
         "src/start.ts"
     ],
     "include": [
-        "./**/*.ts",
-        "forge.config.ts"
+        "./**/*.ts"
     ],
     "exclude": [
         "node_modules",

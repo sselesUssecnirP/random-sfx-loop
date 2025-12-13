@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Random SFX</title>
+        <link rel="stylesheet" href="../css/index.css">
+    </head>
+    <body>
+
+        <button id="openSettings" onclick="openSettings()" >Settings</button>
+
+        <div id="settings">
+            <p id="requiresReload">* requires reload when this color</p>
+            <label id="changeDirLab" for="changeDir">Change Directory: </label>
+            <input id="changeDir">
+            <br>
+            <label id="ignoredFoldersLab" for="ignoredFolders">Change Ignored Folders: </label>
+            <input id="ignoredFolders">
+            <br>
+            <label id="capQueueElLab" for="capQueue">Should Queue Cap? </label>
+            <input id="capQueueEl" type="checkbox">
+            <br>
+            <label id="queueCapLab" for="queueCap">Queue's Cap: </label>
+            <input id="queueCap">
+            <br>
+            <label id="shouldBinomialLab" for="shouldBinomial">Should use binomial randomness? </label>
+            <input id="shouldBinomial" type="checkbox">
+            <br>
+            <label id="binomialTrialsLab" for="binomialTrials">Binomial Trials (n): </label>
+            <input id="binomialTrials">
+            <br>
+            <label id="binomialProbLab" for="binomialProb">Binomial Probability (p): </label>
+            <input id="binomialProb">
+            <br>
+            <label id="shouldDiscordBotLab" for="shouldDiscordBot">Should use Discord bot? </label>
+            <input id="shouldDiscordBot" type="checkbox">
+            <br>
+            <label id="discordBotTokenLab" for="discordBotToken">Discord Bot Token: </label>
+            <input id="discordBotToken">
+            <br>
+            <label id="discordBotClientLab" for="discordBotClient">Discord Bot Client ID: </label>
+            <input id="discordBotClient">
+            <br>
+            <button id="reloadApp">Submit</button>
+        </div>
+
+        <div>
+            <!--<h1 style="color:aqua;">Now Playing: <p id="nowPlaying" style="animation: rainbow 1.25s linear; animation-iteration-count: infinite;"></p></h1> -->
+            <button id="toggleSFX" onclick="toggleSFX()">Start SFX</button><br>
+            <label for="changeSFXCount" style="color:aqua;">Change SFX Count:</label><br>
+            <input id="changeSFXCount" onchange="changeSFXParams('methodCount')" value=""/><br>
+            <label for="changeSFXCD" style="color:aqua;">Change SFX Cooldown (in seconds):</label><br>
+            <input id="changeSFXCD"onchange="changeSFXParams('methodTime')" value=""/><br>
+            <label id="minQueueTimeLab" for="changeQueueTime" style="color:aqua;">Change Minimum Queue Time (in seconds):</label><br>
+            <input id="minQueueTime"onchange="changeSFXParams('minQueueTime')" value=""/><br>
+            <label id="ignoreUntaggedLab" for="ignoreUntagged" style="color:aqua;">Ignore files if untagged? </label>
+            <input type="checkbox" id="ignoreUntagged" onchange="changeSFXParams('ignoreUntagged')">
+        </div>
+
+        <div id="volume">
+            <label id="volumeControl" for="volume">Change Volume:</label>
+            <input type="range" id="volumeSlider" min="0" max="100">
+        </div>
+
+        <script src="../js/index.js"></script>
+    </body>
+</html>
