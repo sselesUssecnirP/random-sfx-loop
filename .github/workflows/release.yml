@@ -30,7 +30,7 @@ jobs:
         node-version: 24
 
     - name: install dependencies
-      run: npm ci
+      run: npm ci --force
 
     - name: compile
       run: npm run compile
@@ -58,7 +58,7 @@ jobs:
         node-version: 24
 
     - name: install dependencies
-      run: npm ci
+      run: npm ci --force
       
     - name: install ffmpeg
       run: npm i -g ffmpeg
@@ -99,7 +99,7 @@ jobs:
         run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; pkg.isBuildZip = true; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
       
       - name: install dependencies
-        run: npm ci
+        run: npm ci --force
 
       - name: install ffmpeg
         run: npm i -g ffmpeg
