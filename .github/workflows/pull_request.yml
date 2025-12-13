@@ -19,7 +19,6 @@ jobs:
             runner: windows-latest
           - platform: arm64win
             runner: windows-11-arm
-
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -45,7 +44,6 @@ jobs:
             runner: ubuntu-latest
           - platform: arm64lin
             runner: ubuntu-24.04-arm
-
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
@@ -86,7 +84,7 @@ jobs:
           node-version: 24
 
       - name: Edit package.json
-        run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+        run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; pkg.isBuildZip = true; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
       
       - name: install dependencies
         run: npm ci

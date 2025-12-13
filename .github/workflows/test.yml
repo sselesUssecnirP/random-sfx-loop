@@ -86,7 +86,7 @@ jobs:
           node-version: 24
 
       - name: Edit package.json
-        run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
+        run: node -e "const pkg=require('./package.json'); pkg.config.forge='./dist/zip.config.js'; pkg.isBuildZip = true; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2));"
       
       - name: install dependencies
         run: npm ci
