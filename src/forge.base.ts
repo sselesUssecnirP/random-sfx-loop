@@ -111,4 +111,6 @@ export const createForgeConfig = (opts: { mode: `installers` | `zip` }) => {
       })
     ]
   }
+
+  return forge;
 }
