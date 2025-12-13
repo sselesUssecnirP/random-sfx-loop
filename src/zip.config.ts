@@ -1,3 +1,5 @@
 import { createForgeConfig } from "./forge.base";
 
-export default createForgeConfig({ mode: 'zip' }); 
+const forgeConfig = createForgeConfig({ mode: 'zip' });
+
+export { forgeConfig }; 

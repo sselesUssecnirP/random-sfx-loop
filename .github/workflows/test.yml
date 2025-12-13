@@ -93,3 +93,6 @@ jobs:
 
       - name: compile
         run: npm run compile
+
+      - name: build
+        run: npm run build
