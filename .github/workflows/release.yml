@@ -31,6 +31,9 @@ jobs:
 
     - name: install dependencies
       run: npm ci
+    
+    - name: install ffmpeg
+      run: npm i -g ffmpeg
 
     - name: compile
       run: npm run compile
@@ -59,7 +62,10 @@ jobs:
 
     - name: install dependencies
       run: npm ci
-
+      
+    - name: install ffmpeg
+      run: npm i -g ffmpeg
+      
     - name: compile
       run: npm run compile
 
@@ -98,6 +104,9 @@ jobs:
       - name: install dependencies
         run: npm ci
 
+      - name: install ffmpeg
+        run: npm i -g ffmpeg
+        
       - name: compile
         run: npm run compile
 
