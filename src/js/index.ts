@@ -164,6 +164,29 @@ const sleep = async (ms: number = 1000) => {
 const openSettings = () => {
     console.log(settings.style.display)
 
+    let checkSettings = [
+        'changeDir', 
+        'ignoredFolders',
+        'capQueueEl',
+        'queueCap',
+        'shouldBinomial',
+        'binomialTrials',
+        'binomialProb',
+        'shouldDiscordBot',
+        'discordBotClient'
+    ]
+
+    changeDir.value = config.directory;
+    ignoredFolders.value = config.ignoredFolders.join(',');
+    capQueueEl.checked = config.capQueue ?? false;
+    queueCap.value = config.queueCap ? `${config.queueCap}` : '';
+    shouldBinomial.checked = config.useBinomial ?? false;
+    binomialProb.value = config.binomialProb ? `${config.binomialProb}` : `0.5`;
+    binomialTrials.value = config.binomialTrials ? `${config.binomialTrials}` : `1`;
+    shouldDiscordBot.checked = config.useDiscordBot ?? false;
+    discordBotToken.value = config.discord_token ? `has_token_already` : `put_token_here`;
+    discordBotClient.value = config.discord_client_id ? `${config.discord_client_id}` : `client_id_here`;
+
     settings.style.display == 'none' ? settings.style.display = 'inline' : settings.style.display = 'none';
 }
 
