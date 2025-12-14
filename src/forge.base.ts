@@ -10,6 +10,7 @@ import { MakerSnap } from '@electron-forge/maker-snap';
 import { PublisherGithub } from '@electron-forge/publisher-github';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { FusesPlugin } from '@electron-forge/plugin-fuses';
+// @ts-expect-error
 import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 export const createForgeConfig = (opts: { mode: `installers` | `zip` }) => {
